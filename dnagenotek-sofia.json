@@ -1,0 +1,1135 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "SOFIA Docs",
+      "description": "# Introduction \nWelcome to **SOFIA**, the **S**ingle **O**rder **F**ulfillment **I**ntegration **A**PI.\n\nFor the latest version of SOFIA Docs please use <a href=\"https://app.swaggerhub.com/apis-docs/dnagenotek/sofia/2\">SwaggerHub</a>.\n\nYou can use the API to access SOFIA endpoints, which let you submit and retrieve new orders, and look up status information for existing orders.\n<aside class=\"warning\"> All requests must be made over HTTPS. Any HTTP requests will not be accepted by the server. </aside>\n\n# Authentication\n## Basic Auth\nSOFIA uses API keys and HTTP Basic Authentication to authenticate access to the API.\nUsing HTTP Basic Auth, SOFIA expects the API key as the username, with a blank password. For example, to authenticate using curl:\n<code>curl \"https://sofia.dnagenotek.com/v2/orders\" -u \"api_secret_key:\"</code>\n<aside class=\"notice\"> You must replace <code>api_secret_key</code> with your personal API key. The colon after the API key is required when specifying the authentication header directly. You can request your API key from <a href=\"mailto:sofia@dnagenotek.com\">sofia@dnagenotek.com</a></aside>\n\n## OAuth\nFor OAuth Credentials and details on client Credential token flow contact SOF Support.\n# Versioning\nWhen we make backwards-incompatible changes to the API, we release new, versioned endpoints. The current version is `v2`, and can be accessed at `https://sofia.dnagenotek.com/api/v2`.\n# Errors\nSome common API errors and context is given below to help with most common scenarios and to help your validation efforts with the integration.\n## 500 Level Errors\nErrors in the 500 range are server errors. Our team will be notified and will take the nescessary steps to correct and prevent server errors. Some coordination may be nescessary to ensure orders are in the correct state and any data loss or duplication has been corrected. Please contact our team in this case.",
+      "contact": {
+        "email": "sofia@dnagenotek.com"
+      },
+      "version": "2"
+    },
+    "servers": [
+      {
+        "url": "https://sofia-stage.dnagenotek.com"
+      },
+      {
+        "url": "https://sofia.dnagenotek.com"
+      }
+    ],
+    "security": [
+      {
+        "BasicAuth": []
+      },
+      {
+        "OAuth2": []
+      },
+      {
+        "BearerAuth": []
+      }
+    ],
+    "paths": {
+      "/api/v1/status": {
+        "get": {
+          "tags": [
+            "Public & HTTP"
+          ],
+          "responses": {
+            "200": {
+              "description": "Health check",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/inline_response_200"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/v2/orders": {
+        "get": {
+          "tags": [
+            "Customers V2",
+            "Fulfillment"
+          ],
+          "summary": "List orders",
+          "description": "By passing in the appropriate options, you can search for\norders in the system\n",
+          "operationId": "list_orders_v2",
+          "parameters": [
+            {
+              "name": "created_after",
+              "in": "query",
+              "description": "example: 2019-03-14 minimum created on date",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "updated_after",
+              "in": "query",
+              "description": "example: 2019-03-14 minimum updated on date",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "status",
+              "in": "query",
+              "description": "one of pending, fulfillment, shipped, error",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "secondary_id",
+              "in": "query",
+              "description": "pass an optional customer_id to match",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "search results matching criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/inline_response_200_1"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "bad input parameter"
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "Customers V2"
+          ],
+          "summary": "Create an order",
+          "description": "Creates an order to be fulfilled",
+          "operationId": "new_order_v2",
+          "requestBody": {
+            "description": "New order to fulfill",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/new_order"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "item created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/order"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "403": {
+              "description": "forbidden, usually due to authentication"
+            }
+          }
+        }
+      },
+      "/api/v2/orders/{order_id}": {
+        "get": {
+          "tags": [
+            "Customers V2",
+            "Fulfillment"
+          ],
+          "summary": "Retrieve an order",
+          "description": "By passing in the appropriate options, you can search for orders in the system\n",
+          "operationId": "get_order_v2",
+          "parameters": [
+            {
+              "name": "order_id",
+              "in": "path",
+              "description": "ID of order to return",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "search results matching criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/order"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "bad input parameter"
+            }
+          }
+        },
+        "patch": {
+          "tags": [
+            "Fulfillment"
+          ],
+          "summary": "Update an order",
+          "description": "Updates an order with shipped details and kits.",
+          "operationId": "update_order",
+          "parameters": [
+            {
+              "name": "order_id",
+              "in": "path",
+              "description": "ID of order to return",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "order to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/order_patch"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "item updated"
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "403": {
+              "description": "forbidden, an order is already in shipped/error status and cannot be updated,"
+            }
+          }
+        }
+      },
+      "/api/v2/orders/return": {
+        "post": {
+          "tags": [
+            "Fulfillment"
+          ],
+          "summary": "Create a bulk return order",
+          "description": "Creates a bulk return order to be fulfilled.\nThis actually uses the `/orders` path.",
+          "operationId": "bulk_order",
+          "requestBody": {
+            "description": "Parameter subset of the full order object to request a new bulk return order to be fulfilled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/new_bulk_order"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "item created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/new_bulk_order"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "403": {
+              "description": "forbidden, usually due to authentication"
+            }
+          }
+        }
+      },
+      "/oauth/orders": {
+        "get": {
+          "tags": [
+            "Customers OAuth"
+          ],
+          "summary": "List orders",
+          "description": "By passing in the appropriate options, you can search for\norders in the system\n",
+          "operationId": "list_orders_oauth",
+          "parameters": [
+            {
+              "name": "created_after",
+              "in": "query",
+              "description": "example: 2019-03-14 minimum created on date",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "updated_after",
+              "in": "query",
+              "description": "example: 2019-03-14 minimum updated on date",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "status",
+              "in": "query",
+              "description": "one of pending, fulfillment, shipped, error",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "secondary_id",
+              "in": "query",
+              "description": "pass an optional customer_id to match",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "per_page",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "number"
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "required": false,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "search results matching criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/inline_response_200_1"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "bad input parameter"
+            }
+          },
+          "security": [
+            {
+              "OAuth2Stage": []
+            },
+            {
+              "OAuth2Prod": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Customers OAuth"
+          ],
+          "summary": "Create an order",
+          "description": "Creates an order to be fulfilled",
+          "operationId": "new_order_oauth",
+          "requestBody": {
+            "description": "New order to fulfill",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/new_order"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "item created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/order"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "403": {
+              "description": "forbidden, usually due to authentication"
+            }
+          },
+          "security": [
+            {
+              "OAuth2Stage": []
+            },
+            {
+              "OAuth2Prod": []
+            }
+          ]
+        }
+      },
+      "/oauth/orders/{order_id}": {
+        "get": {
+          "tags": [
+            "Customers OAuth"
+          ],
+          "summary": "Retrieve an order",
+          "description": "By passing in the appropriate options, you can search for orders in the system\n",
+          "operationId": "get_order_oauth",
+          "parameters": [
+            {
+              "name": "order_id",
+              "in": "path",
+              "description": "ID of order to return",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "search results matching criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/order"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "bad input parameter"
+            }
+          },
+          "security": [
+            {
+              "OAuth2Stage": []
+            },
+            {
+              "OAuth2Prod": []
+            }
+          ]
+        },
+        "patch": {
+          "tags": [
+            "Fulfillment"
+          ],
+          "summary": "Update an order",
+          "description": "Updates an order with shipped details and kits.",
+          "operationId": "oauth_update_order",
+          "parameters": [
+            {
+              "name": "order_id",
+              "in": "path",
+              "description": "ID of order to return",
+              "required": true,
+              "style": "simple",
+              "explode": false,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "order to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/order_patch"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "item updated"
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "403": {
+              "description": "forbidden, an order is already in shipped/error status and cannot be updated,"
+            }
+          },
+          "security": [
+            {
+              "OAuth2Stage": []
+            },
+            {
+              "OAuth2Prod": []
+            }
+          ]
+        }
+      },
+      "/oauth/token": {
+        "post": {
+          "tags": [
+            "OAuth Token"
+          ],
+          "summary": "Create OAuth2 Token",
+          "operationId": "oauth_token_request",
+          "parameters": [
+            {
+              "name": "grant_type",
+              "in": "query",
+              "required": true,
+              "style": "form",
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "default": "client_credentials"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "item created"
+            },
+            "400": {
+              "description": "invalid input, object invalid"
+            },
+            "403": {
+              "description": "forbidden, usually due to authentication"
+            }
+          },
+          "security": [
+            {
+              "BasicAuth": []
+            }
+          ]
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "status": {
+          "required": [
+            "status"
+          ],
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "example": "success"
+            }
+          },
+          "description": "Affirmative response to healthcheck"
+        },
+        "order": {
+          "required": [
+            "destination",
+            "id",
+            "items"
+          ],
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.",
+              "format": "uuid"
+            },
+            "destination": {
+              "$ref": "#/components/schemas/destination"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/item"
+              }
+            },
+            "kits": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/kits"
+              }
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/label"
+              }
+            },
+            "customer_id": {
+              "type": "string",
+              "description": "Use this field to assign an ID that traces back to your records.",
+              "example": "AFW-123-340#87"
+            },
+            "outbound_tracking": {
+              "type": "string",
+              "description": "When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.",
+              "example": "PX01010101010101"
+            },
+            "fulfillment_id": {
+              "type": "string",
+              "description": "The fulfillment order number for the Order.",
+              "example": "B1001010"
+            },
+            "service_level": {
+              "type": "string",
+              "example": "USPS First-Class Mail (Endicia)"
+            },
+            "error_detail": {
+              "type": "string",
+              "description": "If an error is encountered during processing, this field will contain a descriptive error message."
+            },
+            "status": {
+              "type": "string",
+              "description": "The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.",
+              "example": "shipped"
+            },
+            "created_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "expected_shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "updated_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            }
+          },
+          "description": " The Orders endpoint lets you submit new outbound orders, and keep track of shipment tracking and status information for submitted orders. The API allows you to create a new order, update an existing order, retrieve information on an individual order, or list all of the orders associated with your account.\n\nThis description reflects the current state of the API. If your configuration requires additional fields or customizations, we can add these as necessary, maintaining backwards compatibility wherever possible.\n\nSome attributes of the Order object are generic across all accounts and orders, while others, such as labels, are dependent upon the configuration in your agreement with DNA Genotek. "
+        },
+        "order_patch": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.",
+              "format": "uuid"
+            },
+            "fulfillment_id": {
+              "type": "string",
+              "description": "The fulfillment order number for the Order.",
+              "example": "B1001010"
+            },
+            "status": {
+              "type": "string",
+              "description": "The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.",
+              "example": "shipped"
+            },
+            "outbound_tracking": {
+              "type": "string",
+              "description": "When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.",
+              "example": "PX01010101010101"
+            },
+            "shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "kits": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/kits"
+              }
+            },
+            "error_detail": {
+              "type": "string",
+              "description": "If an error is encountered during processing, this field will contain a descriptive error message."
+            }
+          },
+          "description": " The Orders endpoint lets you submit new outbound orders, and keep track of shipment tracking and status information for submitted orders. The API allows you to create a new order, update an existing order, retrieve information on an individual order, or list all of the orders associated with your account.\n\nThis description reflects the current state of the API. If your configuration requires additional fields or customizations, we can add these as necessary, maintaining backwards compatibility wherever possible.\n\nSome attributes of the Order object are generic across all accounts and orders, while others, such as labels, are dependent upon the configuration in your agreement with DNA Genotek. "
+        },
+        "destination": {
+          "required": [
+            "address_1",
+            "city",
+            "co_first_name",
+            "co_last_name",
+            "co_phone_number",
+            "country",
+            "postal_code",
+            "region"
+          ],
+          "type": "object",
+          "properties": {
+            "co_first_name": {
+              "type": "string",
+              "example": "John"
+            },
+            "co_last_name": {
+              "type": "string",
+              "example": "Appleseed"
+            },
+            "co_phone_number": {
+              "type": "string",
+              "example": "408-867-5309"
+            },
+            "company": {
+              "type": "string",
+              "example": "ACME Corp"
+            },
+            "address_1": {
+              "type": "string",
+              "example": "3000-5 Palladium Drive"
+            },
+            "address_2": {
+              "type": "string",
+              "description": "Must be blank for country: CA",
+              "example": ""
+            },
+            "city": {
+              "type": "string",
+              "example": "Ottawa"
+            },
+            "region": {
+              "type": "string",
+              "example": "true"
+            },
+            "country": {
+              "type": "string",
+              "example": "CA"
+            },
+            "postal_code": {
+              "type": "string",
+              "description": "Canada: C#C#C#, US: #####/#####-####",
+              "example": "K2V1C2"
+            }
+          }
+        },
+        "item": {
+          "required": [
+            "quantity",
+            "sku"
+          ],
+          "type": "object",
+          "properties": {
+            "sku": {
+              "type": "string",
+              "description": "The SKU is defined in the SOW and identify the custom box and contents that will be shipped for the order.",
+              "example": "1000"
+            },
+            "quantity": {
+              "type": "integer",
+              "description": "The quantity of the corresponding SKU to be included in the order.",
+              "example": 1
+            }
+          },
+          "description": "An object containing a SKU and a corresponding quantity."
+        },
+        "kits": {
+          "type": "object",
+          "properties": {
+            "barcode": {
+              "type": "string",
+              "example": "AAAA20160121ZZZZ"
+            },
+            "return_tracking": {
+              "type": "string",
+              "example": "10101010101010"
+            },
+            "pmi": {
+              "type": "string",
+              "description": "Assigned by fulfillment team. First 4 numbers (usually) match SKU of item ordered.",
+              "example": "201602080001"
+            }
+          }
+        },
+        "label": {
+          "required": [
+            "label_line_1",
+            "label_line_2",
+            "sample_id"
+          ],
+          "type": "object",
+          "properties": {
+            "sample_id": {
+              "type": "string",
+              "example": "AAAA20160121ZZZZ"
+            },
+            "label_line_1": {
+              "type": "string",
+              "example": "1951-02-54"
+            },
+            "label_line_2": {
+              "type": "string",
+              "example": "Special instructions to be added and scanned"
+            }
+          },
+          "description": "Object representing secondary labels to be included in the order. This object can be customized to hold additional data to an order or for customizations in fulfillment."
+        },
+        "new_order": {
+          "required": [
+            "destination",
+            "items"
+          ],
+          "type": "object",
+          "properties": {
+            "destination": {
+              "$ref": "#/components/schemas/destination"
+            },
+            "items": {
+              "type": "array",
+              "description": "A list of line items containing a SKU and a corresponding quantity.",
+              "items": {
+                "$ref": "#/components/schemas/item"
+              }
+            },
+            "labels": {
+              "type": "array",
+              "description": "Optional list of labels.",
+              "items": {
+                "$ref": "#/components/schemas/label"
+              }
+            },
+            "customer_id": {
+              "type": "string",
+              "description": "Assign an ID that traces back to your records.",
+              "example": "AFW-123-340#87"
+            },
+            "service_level": {
+              "type": "string",
+              "description": "Determines the expected shipped date and method for shipping.",
+              "example": "USPS First-Class Mail (Endicia)"
+            }
+          },
+          "description": " A new order requires a small subset of the parameters of the full order object to request a new order to be fulfilled. "
+        },
+        "new_bulk_order": {
+          "required": [
+            "destination",
+            "group_id",
+            "kits",
+            "order_type"
+          ],
+          "type": "object",
+          "properties": {
+            "order_type": {
+              "type": "string",
+              "description": "Identify the order as a **return** bulk order.",
+              "example": "return"
+            },
+            "destination": {
+              "$ref": "#/components/schemas/destination"
+            },
+            "kits": {
+              "type": "array",
+              "description": "This object will only have one of the options used to select and update the right kit with the bulk order ID information.",
+              "items": {
+                "$ref": "#/components/schemas/kits"
+              }
+            },
+            "group_id": {
+              "type": "string",
+              "description": "A group ID to show the order under the correct account.",
+              "example": "1234"
+            },
+            "service_level": {
+              "type": "string",
+              "description": "Determines the expected shipped date and method for shipping.",
+              "example": "USPS First-Class Mail (Endicia)"
+            }
+          },
+          "description": " Parameter subset of the full order object to request a new bulk return order to be fulfilled. "
+        },
+        "ex1_order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.",
+              "format": "uuid"
+            },
+            "destination": {
+              "$ref": "#/components/schemas/destination"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/item"
+              }
+            },
+            "kits": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/kits"
+              }
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/label"
+              }
+            },
+            "customer_id": {
+              "type": "string",
+              "description": "Use this field to assign an ID that traces back to your records.",
+              "example": "AFW-123-340#87"
+            },
+            "outbound_tracking": {
+              "type": "string",
+              "description": "When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.",
+              "example": "PX01010101010101"
+            },
+            "fulfillment_id": {
+              "type": "string",
+              "description": "The fulfillment order number for the Order.",
+              "example": "B1001010"
+            },
+            "service_level": {
+              "type": "string",
+              "example": "USPS First-Class Mail (Endicia)"
+            },
+            "error_detail": {
+              "type": "string",
+              "description": "If an error is encountered during processing, this field will contain a descriptive error message."
+            },
+            "status": {
+              "type": "string",
+              "description": "The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.",
+              "example": "shipped"
+            },
+            "created_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "expected_shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "updated_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            }
+          },
+          "description": " Example order "
+        },
+        "ex2_order": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.",
+              "format": "uuid"
+            },
+            "destination": {
+              "$ref": "#/components/schemas/destination"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/item"
+              }
+            },
+            "kits": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/kits"
+              }
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/label"
+              }
+            },
+            "customer_id": {
+              "type": "string",
+              "description": "Use this field to assign an ID that traces back to your records.",
+              "example": "AFW-123-340#87"
+            },
+            "outbound_tracking": {
+              "type": "string",
+              "description": "When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.",
+              "example": "PX01010101010101"
+            },
+            "fulfillment_id": {
+              "type": "string",
+              "description": "The fulfillment order number for the Order.",
+              "example": "B1001010"
+            },
+            "service_level": {
+              "type": "string",
+              "example": "USPS First-Class Mail (Endicia)"
+            },
+            "error_detail": {
+              "type": "string",
+              "description": "If an error is encountered during processing, this field will contain a descriptive error message."
+            },
+            "status": {
+              "type": "string",
+              "description": "The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.",
+              "example": "shipped"
+            },
+            "created_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "expected_shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "shipped_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            },
+            "updated_on": {
+              "type": "string",
+              "example": "YYYY-MM-DDThh:mm:ss.sss+hh:mm"
+            }
+          },
+          "description": "Example order "
+        },
+        "ex0_order_list": {
+          "type": "array",
+          "description": "Example order list",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/order"
+              },
+              {
+                "$ref": "#/components/schemas/ex1_order"
+              },
+              {
+                "$ref": "#/components/schemas/ex2_order"
+              }
+            ]
+          }
+        },
+        "inline_response_200": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/status"
+            }
+          ]
+        },
+        "inline_response_200_1": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/ex0_order_list"
+            }
+          ]
+        }
+      },
+      "securitySchemes": {
+        "BasicAuth": {
+          "type": "http",
+          "scheme": "basic"
+        },
+        "OAuth2Stage": {
+          "type": "oauth2",
+          "flows": {
+            "clientCredentials": {
+              "tokenUrl": "https://sofia-stage.dnagenotek.com/oauth/token",
+              "scopes": {}
+            }
+          }
+        },
+        "OAuth2Prod": {
+          "type": "oauth2",
+          "flows": {
+            "clientCredentials": {
+              "tokenUrl": "https://sofia.dnagenotek.com/oauth/token",
+              "scopes": {}
+            }
+          }
+        },
+        "BearerAuth": {
+          "type": "http",
+          "scheme": "bearer"
+        }
+      }
+    }
+  }
