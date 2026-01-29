@@ -5,8 +5,8 @@ All URIs are relative to *https://sofia-stage.dnagenotek.com*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**bulk_order**](FulfillmentApi.md#bulk_order) | **POST** /api/v2/orders/return | Create a bulk return order
-[**get_order_v2_0**](FulfillmentApi.md#get_order_v2_0) | **GET** /api/v2/orders/{order_id} | Retrieve an order
-[**list_orders_v2_0**](FulfillmentApi.md#list_orders_v2_0) | **GET** /api/v2/orders | List orders
+[**get_order_v2**](FulfillmentApi.md#get_order_v2) | **GET** /api/v2/orders/{order_id} | Retrieve an order
+[**list_orders_v2**](FulfillmentApi.md#list_orders_v2) | **GET** /api/v2/orders | List orders
 [**oauth_update_order**](FulfillmentApi.md#oauth_update_order) | **PATCH** /oauth/orders/{order_id} | Update an order
 [**update_order**](FulfillmentApi.md#update_order) | **PATCH** /api/v2/orders/{order_id} | Update an order
 
@@ -16,7 +16,8 @@ Method | HTTP request | Description
 
 Create a bulk return order
 
-Creates a bulk return order to be fulfilled. This actually uses the `/orders` path.
+Creates a bulk return order to be fulfilled.
+This actually uses the `/orders` path.
 
 ### Example
 
@@ -98,12 +99,13 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **get_order_v2_0**
-> List[Order] get_order_v2_0(order_id)
+# **get_order_v2**
+> List[Order] get_order_v2(order_id)
 
 Retrieve an order
 
-By passing in the appropriate options, you can search for orders in the system 
+By passing in the appropriate options, you can search for orders in the system
+
 
 ### Example
 
@@ -146,11 +148,11 @@ with sofia.ApiClient(configuration) as api_client:
 
     try:
         # Retrieve an order
-        api_response = api_instance.get_order_v2_0(order_id)
-        print("The response of FulfillmentApi->get_order_v2_0:\n")
+        api_response = api_instance.get_order_v2(order_id)
+        print("The response of FulfillmentApi->get_order_v2:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling FulfillmentApi->get_order_v2_0: %s\n" % e)
+        print("Exception when calling FulfillmentApi->get_order_v2: %s\n" % e)
 ```
 
 
@@ -184,12 +186,14 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **list_orders_v2_0**
-> InlineResponse2001 list_orders_v2_0(created_after=created_after, updated_after=updated_after, status=status, secondary_id=secondary_id, per_page=per_page, page=page)
+# **list_orders_v2**
+> InlineResponse2001 list_orders_v2(created_after=created_after, updated_after=updated_after, status=status, secondary_id=secondary_id, per_page=per_page, page=page)
 
 List orders
 
-By passing in the appropriate options, you can search for orders in the system 
+By passing in the appropriate options, you can search for
+orders in the system
+
 
 ### Example
 
@@ -237,11 +241,11 @@ with sofia.ApiClient(configuration) as api_client:
 
     try:
         # List orders
-        api_response = api_instance.list_orders_v2_0(created_after=created_after, updated_after=updated_after, status=status, secondary_id=secondary_id, per_page=per_page, page=page)
-        print("The response of FulfillmentApi->list_orders_v2_0:\n")
+        api_response = api_instance.list_orders_v2(created_after=created_after, updated_after=updated_after, status=status, secondary_id=secondary_id, per_page=per_page, page=page)
+        print("The response of FulfillmentApi->list_orders_v2:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling FulfillmentApi->list_orders_v2_0: %s\n" % e)
+        print("Exception when calling FulfillmentApi->list_orders_v2: %s\n" % e)
 ```
 
 

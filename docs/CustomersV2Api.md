@@ -14,7 +14,8 @@ Method | HTTP request | Description
 
 Retrieve an order
 
-By passing in the appropriate options, you can search for orders in the system 
+By passing in the appropriate options, you can search for orders in the system
+
 
 ### Example
 
@@ -100,7 +101,9 @@ Name | Type | Description  | Notes
 
 List orders
 
-By passing in the appropriate options, you can search for orders in the system 
+By passing in the appropriate options, you can search for
+orders in the system
+
 
 ### Example
 

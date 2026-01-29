@@ -10,8 +10,6 @@ Method | HTTP request | Description
 # **api_v1_status_get**
 > InlineResponse200 api_v1_status_get()
 
-
-
 ### Example
 
 * Basic Authentication (BasicAuth):

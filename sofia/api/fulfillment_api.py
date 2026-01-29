@@ -325,7 +325,7 @@ class FulfillmentApi:
 
 
     @validate_call
-    def get_order_v2_0(
+    def get_order_v2(
         self,
         order_id: Annotated[StrictInt, Field(description="ID of order to return")],
         _request_timeout: Union[
@@ -369,7 +369,7 @@ class FulfillmentApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._get_order_v2_0_serialize(
+        _param = self._get_order_v2_serialize(
             order_id=order_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -393,7 +393,7 @@ class FulfillmentApi:
 
 
     @validate_call
-    def get_order_v2_0_with_http_info(
+    def get_order_v2_with_http_info(
         self,
         order_id: Annotated[StrictInt, Field(description="ID of order to return")],
         _request_timeout: Union[
@@ -437,7 +437,7 @@ class FulfillmentApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._get_order_v2_0_serialize(
+        _param = self._get_order_v2_serialize(
             order_id=order_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -461,7 +461,7 @@ class FulfillmentApi:
 
 
     @validate_call
-    def get_order_v2_0_without_preload_content(
+    def get_order_v2_without_preload_content(
         self,
         order_id: Annotated[StrictInt, Field(description="ID of order to return")],
         _request_timeout: Union[
@@ -505,7 +505,7 @@ class FulfillmentApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._get_order_v2_0_serialize(
+        _param = self._get_order_v2_serialize(
             order_id=order_id,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -524,7 +524,7 @@ class FulfillmentApi:
         return response_data.response
 
 
-    def _get_order_v2_0_serialize(
+    def _get_order_v2_serialize(
         self,
         order_id,
         _request_auth,
@@ -590,7 +590,7 @@ class FulfillmentApi:
 
 
     @validate_call
-    def list_orders_v2_0(
+    def list_orders_v2(
         self,
         created_after: Annotated[Optional[StrictStr], Field(description="example: 2019-03-14 minimum created on date")] = None,
         updated_after: Annotated[Optional[StrictStr], Field(description="example: 2019-03-14 minimum updated on date")] = None,
@@ -649,7 +649,7 @@ class FulfillmentApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._list_orders_v2_0_serialize(
+        _param = self._list_orders_v2_serialize(
             created_after=created_after,
             updated_after=updated_after,
             status=status,
@@ -678,7 +678,7 @@ class FulfillmentApi:
 
 
     @validate_call
-    def list_orders_v2_0_with_http_info(
+    def list_orders_v2_with_http_info(
         self,
         created_after: Annotated[Optional[StrictStr], Field(description="example: 2019-03-14 minimum created on date")] = None,
         updated_after: Annotated[Optional[StrictStr], Field(description="example: 2019-03-14 minimum updated on date")] = None,
@@ -737,7 +737,7 @@ class FulfillmentApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._list_orders_v2_0_serialize(
+        _param = self._list_orders_v2_serialize(
             created_after=created_after,
             updated_after=updated_after,
             status=status,
@@ -766,7 +766,7 @@ class FulfillmentApi:
 
 
     @validate_call
-    def list_orders_v2_0_without_preload_content(
+    def list_orders_v2_without_preload_content(
         self,
         created_after: Annotated[Optional[StrictStr], Field(description="example: 2019-03-14 minimum created on date")] = None,
         updated_after: Annotated[Optional[StrictStr], Field(description="example: 2019-03-14 minimum updated on date")] = None,
@@ -825,7 +825,7 @@ class FulfillmentApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._list_orders_v2_0_serialize(
+        _param = self._list_orders_v2_serialize(
             created_after=created_after,
             updated_after=updated_after,
             status=status,
@@ -849,7 +849,7 @@ class FulfillmentApi:
         return response_data.response
 
 
-    def _list_orders_v2_0_serialize(
+    def _list_orders_v2_serialize(
         self,
         created_after,
         updated_after,

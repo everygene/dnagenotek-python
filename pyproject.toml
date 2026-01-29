@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sofia"
-version = "1.0.0"
+version = "2.0.0"
 description = "SOFIA Docs"
 authors = ["OpenAPI Generator Community <sofia@dnagenotek.com>"]
 license = "NoLicense"
@@ -10,14 +10,14 @@ keywords = ["OpenAPI", "OpenAPI-Generator", "SOFIA Docs"]
 include = ["sofia/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.12,<3.13"
 
 urllib3 = ">= 1.25.3 < 3.0.0"
 python-dateutil = ">= 2.8.2"
 pydantic = ">= 2"
 typing-extensions = ">= 4.7.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = ">= 7.2.1"
 pytest-cov = ">= 2.8.1"
 tox = ">= 3.9.0"
@@ -27,8 +27,8 @@ mypy = ">= 1.5"
 
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pylint.'MESSAGES CONTROL']
 extension-pkg-whitelist = "pydantic"
