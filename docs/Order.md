@@ -6,7 +6,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **str** | An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order. | 
+**id** | **UUID** | An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order. | 
 **destination** | [**Destination**](Destination.md) |  | 
 **items** | [**List[Item]**](Item.md) |  | 
 **kits** | [**List[Kits]**](Kits.md) |  | [optional] 

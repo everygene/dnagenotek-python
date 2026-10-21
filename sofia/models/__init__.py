@@ -13,7 +13,6 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-
 # import models into model package
 from sofia.models.destination import Destination
 from sofia.models.ex0_order_list_inner import Ex0OrderListInner
@@ -29,3 +28,4 @@ from sofia.models.new_order import NewOrder
 from sofia.models.order import Order
 from sofia.models.order_patch import OrderPatch
 from sofia.models.status import Status
+

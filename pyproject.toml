@@ -1,34 +1,38 @@
-[tool.poetry]
+[project]
 name = "sofia"
 version = "2.0.0"
 description = "SOFIA Docs"
-authors = ["OpenAPI Generator Community <sofia@dnagenotek.com>"]
-license = "NoLicense"
+authors = [
+  {name = "OpenAPI Generator Community",email = "sofia@dnagenotek.com"},
+]
 readme = "README.md"
-repository = "https://github.com/GIT_USER_ID/GIT_REPO_ID"
 keywords = ["OpenAPI", "OpenAPI-Generator", "SOFIA Docs"]
-include = ["sofia/py.typed"]
+requires-python = ">=3.10"
 
-[tool.poetry.dependencies]
-python = ">=3.12,<3.13"
+dependencies = [
+  "urllib3 (>=2.7.0,<3.0.0)",
+  "python-dateutil (>=2.8.2)",
+  "pydantic (>=2.11)",
+  "typing-extensions (>=4.7.1)",
+]
 
-urllib3 = ">= 1.25.3 < 3.0.0"
-python-dateutil = ">= 2.8.2"
-pydantic = ">= 2"
-typing-extensions = ">= 4.7.1"
+[project.urls]
+Repository = "https://github.com/everygene/dnagenotek-python"
 
-[tool.poetry.group.dev.dependencies]
-pytest = ">= 7.2.1"
-pytest-cov = ">= 2.8.1"
-tox = ">= 3.9.0"
-flake8 = ">= 4.0.0"
-types-python-dateutil = ">= 2.8.19.14"
-mypy = ">= 1.5"
+[dependency-groups]
+dev = [
+  "pytest>=9.0.3",
+  "pytest-cov>=2.8.1",
+  "tox>=3.9.0",
+  "flake8>=4.0.0",
+  "types-python-dateutil>=2.8.19.14",
+  "mypy>=1.5",
+]
 
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pylint.'MESSAGES CONTROL']
 extension-pkg-whitelist = "pydantic"
@@ -49,7 +53,7 @@ warn_unused_ignores = true
 
 ## Getting these passing should be easy
 strict_equality = true
-strict_concatenate = true
+extra_checks = true
 
 ## Strongly recommend enabling this one as soon as you can
 check_untyped_defs = true
@@ -70,3 +74,20 @@ disallow_any_generics = true
 #
 ### This one can be tricky to get passing if you use a lot of untyped libraries
 #warn_return_any = true
+
+[[tool.mypy.overrides]]
+module = [
+  "sofia.configuration",
+]
+warn_unused_ignores = true
+strict_equality = true
+extra_checks = true
+check_untyped_defs = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_reexport = true
+warn_return_any = true

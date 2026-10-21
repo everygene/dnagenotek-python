@@ -6,7 +6,7 @@ Example order
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **str** | An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order. | [optional] 
+**id** | **UUID** | An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order. | [optional] 
 **destination** | [**Destination**](Destination.md) |  | [optional] 
 **items** | [**List[Item]**](Item.md) |  | [optional] 
 **kits** | [**List[Kits]**](Kits.md) |  | [optional] 

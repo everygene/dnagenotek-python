@@ -24,20 +24,23 @@ from sofia.models.destination import Destination
 from sofia.models.kits import Kits
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class NewBulkOrder(BaseModel):
     """
      Parameter subset of the full order object to request a new bulk return order to be fulfilled. 
     """ # noqa: E501
-    order_type: StrictStr = Field(description="Identify the order as a **return** bulk order.")
+    order_type: StrictStr = Field(description="Identify the order as a **return** bulk order.", json_schema_extra={"examples": ["return"]})
     destination: Destination
     kits: List[Kits] = Field(description="This object will only have one of the options used to select and update the right kit with the bulk order ID information.")
-    group_id: StrictStr = Field(description="A group ID to show the order under the correct account.")
-    service_level: Optional[StrictStr] = Field(default=None, description="Determines the expected shipped date and method for shipping.")
+    group_id: StrictStr = Field(description="A group ID to show the order under the correct account.", json_schema_extra={"examples": ["1234"]})
+    service_level: Optional[StrictStr] = Field(default=None, description="Determines the expected shipped date and method for shipping.", json_schema_extra={"examples": ["USPS First-Class Mail (Endicia)"]})
+    additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["order_type", "destination", "kits", "group_id", "service_level"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -49,8 +52,7 @@ class NewBulkOrder(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -66,8 +68,10 @@ class NewBulkOrder(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * Fields in `self.additional_properties` are added to the output dict.
         """
         excluded_fields: Set[str] = set([
+            "additional_properties",
         ])
 
         _dict = self.model_dump(
@@ -82,9 +86,13 @@ class NewBulkOrder(BaseModel):
         _items = []
         if self.kits:
             for _item_kits in self.kits:
-                if _item_kits:
-                    _items.append(_item_kits.to_dict())
+                _items.append(_item_kits.to_dict() if _item_kits is not None else None)
             _dict['kits'] = _items
+        # puts key-value pairs in additional_properties in the top level
+        if self.additional_properties is not None:
+            for _key, _value in self.additional_properties.items():
+                _dict[_key] = _value
+
         return _dict
 
     @classmethod
@@ -103,6 +111,11 @@ class NewBulkOrder(BaseModel):
             "group_id": obj.get("group_id"),
             "service_level": obj.get("service_level")
         })
+        # store additional fields in additional_properties
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                _obj.additional_properties[_key] = obj.get(_key)
+
         return _obj
 
 

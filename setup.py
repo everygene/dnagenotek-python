@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
     SOFIA Docs
 
@@ -22,12 +20,12 @@ from setuptools import setup, find_packages  # noqa: H301
 # prerequisite: setuptools
 # http://pypi.python.org/pypi/setuptools
 NAME = "sofia"
-VERSION = "1.0.0"
-PYTHON_REQUIRES = ">= 3.9"
+VERSION = "2.0.0"
+PYTHON_REQUIRES = ">= 3.10"
 REQUIRES = [
-    "urllib3 >= 2.1.0, < 3.0.0",
+    "urllib3 >= 2.7.0, < 3.0.0",
     "python-dateutil >= 2.8.2",
-    "pydantic >= 2",
+    "pydantic >= 2.11",
     "typing-extensions >= 4.7.1",
 ]
 
@@ -37,7 +35,7 @@ setup(
     description="SOFIA Docs",
     author="OpenAPI Generator community",
     author_email="sofia@dnagenotek.com",
-    url="",
+    url="https://github.com/everygene/dnagenotek-python",
     keywords=["OpenAPI", "OpenAPI-Generator", "SOFIA Docs"],
     install_requires=REQUIRES,
     packages=find_packages(exclude=["test", "tests"]),

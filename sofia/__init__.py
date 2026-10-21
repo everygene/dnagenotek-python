@@ -15,38 +15,71 @@
 """  # noqa: E501
 
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
+
+# Define package exports
+__all__ = [
+    "CustomersOAuthApi",
+    "CustomersV2Api",
+    "FulfillmentApi",
+    "OAuthTokenApi",
+    "PublicHTTPApi",
+    "ApiResponse",
+    "ApiClient",
+    "Configuration",
+    "OpenApiException",
+    "ApiTypeError",
+    "ApiValueError",
+    "ApiKeyError",
+    "ApiAttributeError",
+    "ApiException",
+    "Destination",
+    "Ex0OrderListInner",
+    "Ex1Order",
+    "Ex2Order",
+    "InlineResponse200",
+    "InlineResponse2001",
+    "Item",
+    "Kits",
+    "Label",
+    "NewBulkOrder",
+    "NewOrder",
+    "Order",
+    "OrderPatch",
+    "Status",
+]
 
 # import apis into sdk package
-from sofia.api.customers_o_auth_api import CustomersOAuthApi
-from sofia.api.customers_v2_api import CustomersV2Api
-from sofia.api.fulfillment_api import FulfillmentApi
-from sofia.api.o_auth_token_api import OAuthTokenApi
-from sofia.api.public_http_api import PublicHTTPApi
+from sofia.api.customers_o_auth_api import CustomersOAuthApi as CustomersOAuthApi
+from sofia.api.customers_v2_api import CustomersV2Api as CustomersV2Api
+from sofia.api.fulfillment_api import FulfillmentApi as FulfillmentApi
+from sofia.api.o_auth_token_api import OAuthTokenApi as OAuthTokenApi
+from sofia.api.public_http_api import PublicHTTPApi as PublicHTTPApi
 
 # import ApiClient
-from sofia.api_response import ApiResponse
-from sofia.api_client import ApiClient
-from sofia.configuration import Configuration
-from sofia.exceptions import OpenApiException
-from sofia.exceptions import ApiTypeError
-from sofia.exceptions import ApiValueError
-from sofia.exceptions import ApiKeyError
-from sofia.exceptions import ApiAttributeError
-from sofia.exceptions import ApiException
+from sofia.api_response import ApiResponse as ApiResponse
+from sofia.api_client import ApiClient as ApiClient
+from sofia.configuration import Configuration as Configuration
+from sofia.exceptions import OpenApiException as OpenApiException
+from sofia.exceptions import ApiTypeError as ApiTypeError
+from sofia.exceptions import ApiValueError as ApiValueError
+from sofia.exceptions import ApiKeyError as ApiKeyError
+from sofia.exceptions import ApiAttributeError as ApiAttributeError
+from sofia.exceptions import ApiException as ApiException
 
 # import models into sdk package
-from sofia.models.destination import Destination
-from sofia.models.ex0_order_list_inner import Ex0OrderListInner
-from sofia.models.ex1_order import Ex1Order
-from sofia.models.ex2_order import Ex2Order
-from sofia.models.inline_response200 import InlineResponse200
-from sofia.models.inline_response2001 import InlineResponse2001
-from sofia.models.item import Item
-from sofia.models.kits import Kits
-from sofia.models.label import Label
-from sofia.models.new_bulk_order import NewBulkOrder
-from sofia.models.new_order import NewOrder
-from sofia.models.order import Order
-from sofia.models.order_patch import OrderPatch
-from sofia.models.status import Status
+from sofia.models.destination import Destination as Destination
+from sofia.models.ex0_order_list_inner import Ex0OrderListInner as Ex0OrderListInner
+from sofia.models.ex1_order import Ex1Order as Ex1Order
+from sofia.models.ex2_order import Ex2Order as Ex2Order
+from sofia.models.inline_response200 import InlineResponse200 as InlineResponse200
+from sofia.models.inline_response2001 import InlineResponse2001 as InlineResponse2001
+from sofia.models.item import Item as Item
+from sofia.models.kits import Kits as Kits
+from sofia.models.label import Label as Label
+from sofia.models.new_bulk_order import NewBulkOrder as NewBulkOrder
+from sofia.models.new_order import NewOrder as NewOrder
+from sofia.models.order import Order as Order
+from sofia.models.order_patch import OrderPatch as OrderPatch
+from sofia.models.status import Status as Status
+
