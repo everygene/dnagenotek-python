@@ -22,25 +22,28 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class Destination(BaseModel):
     """
     Destination
     """ # noqa: E501
-    co_first_name: StrictStr
-    co_last_name: StrictStr
-    co_phone_number: StrictStr
-    company: Optional[StrictStr] = None
-    address_1: StrictStr
-    address_2: Optional[StrictStr] = Field(default=None, description="Must be blank for country: CA")
-    city: StrictStr
-    region: StrictStr
-    country: StrictStr
-    postal_code: StrictStr = Field(description="Canada: C#C#C#, US: #####/#####-####")
+    co_first_name: StrictStr = Field(json_schema_extra={"examples": ["John"]})
+    co_last_name: StrictStr = Field(json_schema_extra={"examples": ["Appleseed"]})
+    co_phone_number: StrictStr = Field(json_schema_extra={"examples": ["408-867-5309"]})
+    company: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["ACME Corp"]})
+    address_1: StrictStr = Field(json_schema_extra={"examples": ["3000-5 Palladium Drive"]})
+    address_2: Optional[StrictStr] = Field(default=None, description="Must be blank for country: CA", json_schema_extra={"examples": [""]})
+    city: StrictStr = Field(json_schema_extra={"examples": ["Ottawa"]})
+    region: StrictStr = Field(json_schema_extra={"examples": ["true"]})
+    country: StrictStr = Field(json_schema_extra={"examples": ["CA"]})
+    postal_code: StrictStr = Field(description="Canada: C#C#C#, US: #####/#####-####", json_schema_extra={"examples": ["K2V1C2"]})
+    additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["co_first_name", "co_last_name", "co_phone_number", "company", "address_1", "address_2", "city", "region", "country", "postal_code"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -52,8 +55,7 @@ class Destination(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -69,8 +71,10 @@ class Destination(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * Fields in `self.additional_properties` are added to the output dict.
         """
         excluded_fields: Set[str] = set([
+            "additional_properties",
         ])
 
         _dict = self.model_dump(
@@ -78,6 +82,11 @@ class Destination(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # puts key-value pairs in additional_properties in the top level
+        if self.additional_properties is not None:
+            for _key, _value in self.additional_properties.items():
+                _dict[_key] = _value
+
         return _dict
 
     @classmethod
@@ -101,6 +110,11 @@ class Destination(BaseModel):
             "country": obj.get("country"),
             "postal_code": obj.get("postal_code")
         })
+        # store additional fields in additional_properties
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                _obj.additional_properties[_key] = obj.get(_key)
+
         return _obj
 
 

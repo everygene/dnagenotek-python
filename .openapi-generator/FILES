@@ -23,6 +23,7 @@ docs/OrderPatch.md
 docs/PublicHTTPApi.md
 docs/Status.md
 git_push.sh
+pyproject.toml
 requirements.txt
 setup.cfg
 setup.py

@@ -20,36 +20,40 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from uuid import UUID
 from sofia.models.destination import Destination
 from sofia.models.item import Item
 from sofia.models.kits import Kits
 from sofia.models.label import Label
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class Ex1Order(BaseModel):
     """
      Example order 
     """ # noqa: E501
-    id: Optional[StrictStr] = Field(default=None, description="An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.")
+    id: Optional[UUID] = Field(default=None, description="An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.")
     destination: Optional[Destination] = None
     items: Optional[List[Item]] = None
     kits: Optional[List[Kits]] = None
     labels: Optional[List[Label]] = None
-    customer_id: Optional[StrictStr] = Field(default=None, description="Use this field to assign an ID that traces back to your records.")
-    outbound_tracking: Optional[StrictStr] = Field(default=None, description="When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.")
-    fulfillment_id: Optional[StrictStr] = Field(default=None, description="The fulfillment order number for the Order.")
-    service_level: Optional[StrictStr] = None
+    customer_id: Optional[StrictStr] = Field(default=None, description="Use this field to assign an ID that traces back to your records.", json_schema_extra={"examples": ["AFW-123-340#87"]})
+    outbound_tracking: Optional[StrictStr] = Field(default=None, description="When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.", json_schema_extra={"examples": ["PX01010101010101"]})
+    fulfillment_id: Optional[StrictStr] = Field(default=None, description="The fulfillment order number for the Order.", json_schema_extra={"examples": ["B1001010"]})
+    service_level: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["USPS First-Class Mail (Endicia)"]})
     error_detail: Optional[StrictStr] = Field(default=None, description="If an error is encountered during processing, this field will contain a descriptive error message.")
-    status: Optional[StrictStr] = Field(default=None, description="The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.")
-    created_on: Optional[StrictStr] = None
-    expected_shipped_on: Optional[StrictStr] = None
-    shipped_on: Optional[StrictStr] = None
-    updated_on: Optional[StrictStr] = None
+    status: Optional[StrictStr] = Field(default=None, description="The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.", json_schema_extra={"examples": ["shipped"]})
+    created_on: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["YYYY-MM-DDThh:mm:ss.sss+hh:mm"]})
+    expected_shipped_on: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["YYYY-MM-DDThh:mm:ss.sss+hh:mm"]})
+    shipped_on: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["YYYY-MM-DDThh:mm:ss.sss+hh:mm"]})
+    updated_on: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["YYYY-MM-DDThh:mm:ss.sss+hh:mm"]})
+    additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["id", "destination", "items", "kits", "labels", "customer_id", "outbound_tracking", "fulfillment_id", "service_level", "error_detail", "status", "created_on", "expected_shipped_on", "shipped_on", "updated_on"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -61,8 +65,7 @@ class Ex1Order(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -78,8 +81,10 @@ class Ex1Order(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * Fields in `self.additional_properties` are added to the output dict.
         """
         excluded_fields: Set[str] = set([
+            "additional_properties",
         ])
 
         _dict = self.model_dump(
@@ -94,23 +99,25 @@ class Ex1Order(BaseModel):
         _items = []
         if self.items:
             for _item_items in self.items:
-                if _item_items:
-                    _items.append(_item_items.to_dict())
+                _items.append(_item_items.to_dict() if _item_items is not None else None)
             _dict['items'] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in kits (list)
         _items = []
         if self.kits:
             for _item_kits in self.kits:
-                if _item_kits:
-                    _items.append(_item_kits.to_dict())
+                _items.append(_item_kits.to_dict() if _item_kits is not None else None)
             _dict['kits'] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in labels (list)
         _items = []
         if self.labels:
             for _item_labels in self.labels:
-                if _item_labels:
-                    _items.append(_item_labels.to_dict())
+                _items.append(_item_labels.to_dict() if _item_labels is not None else None)
             _dict['labels'] = _items
+        # puts key-value pairs in additional_properties in the top level
+        if self.additional_properties is not None:
+            for _key, _value in self.additional_properties.items():
+                _dict[_key] = _value
+
         return _dict
 
     @classmethod
@@ -139,6 +146,11 @@ class Ex1Order(BaseModel):
             "shipped_on": obj.get("shipped_on"),
             "updated_on": obj.get("updated_on")
         })
+        # store additional fields in additional_properties
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                _obj.additional_properties[_key] = obj.get(_key)
+
         return _obj
 
 

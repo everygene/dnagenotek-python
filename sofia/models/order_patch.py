@@ -20,25 +20,29 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from uuid import UUID
 from sofia.models.kits import Kits
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class OrderPatch(BaseModel):
     """
      The Orders endpoint lets you submit new outbound orders, and keep track of shipment tracking and status information for submitted orders. The API allows you to create a new order, update an existing order, retrieve information on an individual order, or list all of the orders associated with your account.  This description reflects the current state of the API. If your configuration requires additional fields or customizations, we can add these as necessary, maintaining backwards compatibility wherever possible.  Some attributes of the Order object are generic across all accounts and orders, while others, such as labels, are dependent upon the configuration in your agreement with DNA Genotek. 
     """ # noqa: E501
-    id: Optional[StrictStr] = Field(default=None, description="An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.")
-    fulfillment_id: Optional[StrictStr] = Field(default=None, description="The fulfillment order number for the Order.")
-    status: Optional[StrictStr] = Field(default=None, description="The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.")
-    outbound_tracking: Optional[StrictStr] = Field(default=None, description="When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.")
-    shipped_on: Optional[StrictStr] = None
+    id: Optional[UUID] = Field(default=None, description="An automatically assigned, unique identifier for a given order. This identifier can be used to retrieve an individual order.")
+    fulfillment_id: Optional[StrictStr] = Field(default=None, description="The fulfillment order number for the Order.", json_schema_extra={"examples": ["B1001010"]})
+    status: Optional[StrictStr] = Field(default=None, description="The current status of the order. This can be either `pending`, `fulfillment`, `shipped`, or `error`.", json_schema_extra={"examples": ["shipped"]})
+    outbound_tracking: Optional[StrictStr] = Field(default=None, description="When a package moves from “fulfillment” to “shipped”, this will be populated with the tracking number for the shipment to the destination.", json_schema_extra={"examples": ["PX01010101010101"]})
+    shipped_on: Optional[StrictStr] = Field(default=None, json_schema_extra={"examples": ["YYYY-MM-DDThh:mm:ss.sss+hh:mm"]})
     kits: Optional[List[Kits]] = None
     error_detail: Optional[StrictStr] = Field(default=None, description="If an error is encountered during processing, this field will contain a descriptive error message.")
+    additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["id", "fulfillment_id", "status", "outbound_tracking", "shipped_on", "kits", "error_detail"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -50,8 +54,7 @@ class OrderPatch(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -67,8 +70,10 @@ class OrderPatch(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * Fields in `self.additional_properties` are added to the output dict.
         """
         excluded_fields: Set[str] = set([
+            "additional_properties",
         ])
 
         _dict = self.model_dump(
@@ -80,9 +85,13 @@ class OrderPatch(BaseModel):
         _items = []
         if self.kits:
             for _item_kits in self.kits:
-                if _item_kits:
-                    _items.append(_item_kits.to_dict())
+                _items.append(_item_kits.to_dict() if _item_kits is not None else None)
             _dict['kits'] = _items
+        # puts key-value pairs in additional_properties in the top level
+        if self.additional_properties is not None:
+            for _key, _value in self.additional_properties.items():
+                _dict[_key] = _value
+
         return _dict
 
     @classmethod
@@ -103,6 +112,11 @@ class OrderPatch(BaseModel):
             "kits": [Kits.from_dict(_item) for _item in obj["kits"]] if obj.get("kits") is not None else None,
             "error_detail": obj.get("error_detail")
         })
+        # store additional fields in additional_properties
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                _obj.additional_properties[_key] = obj.get(_key)
+
         return _obj
 
 

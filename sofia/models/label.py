@@ -18,22 +18,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class Label(BaseModel):
     """
     Object representing secondary labels to be included in the order. This object can be customized to hold additional data to an order or for customizations in fulfillment.
     """ # noqa: E501
-    sample_id: StrictStr
-    label_line_1: StrictStr
-    label_line_2: StrictStr
+    sample_id: StrictStr = Field(json_schema_extra={"examples": ["AAAA20160121ZZZZ"]})
+    label_line_1: StrictStr = Field(json_schema_extra={"examples": ["1951-02-54"]})
+    label_line_2: StrictStr = Field(json_schema_extra={"examples": ["Special instructions to be added and scanned"]})
+    additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["sample_id", "label_line_1", "label_line_2"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -45,8 +48,7 @@ class Label(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -62,8 +64,10 @@ class Label(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * Fields in `self.additional_properties` are added to the output dict.
         """
         excluded_fields: Set[str] = set([
+            "additional_properties",
         ])
 
         _dict = self.model_dump(
@@ -71,6 +75,11 @@ class Label(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # puts key-value pairs in additional_properties in the top level
+        if self.additional_properties is not None:
+            for _key, _value in self.additional_properties.items():
+                _dict[_key] = _value
+
         return _dict
 
     @classmethod
@@ -87,6 +96,11 @@ class Label(BaseModel):
             "label_line_1": obj.get("label_line_1"),
             "label_line_2": obj.get("label_line_2")
         })
+        # store additional fields in additional_properties
+        for _key in obj.keys():
+            if _key not in cls.__properties:
+                _obj.additional_properties[_key] = obj.get(_key)
+
         return _obj
 
 
